@@ -132,32 +132,6 @@ def compute_connectivity(matrix: np.array) -> Tuple[list[list[int]], int]:
         Tuple[list, int]: _description_
     """
 
-    """
-    # Construct normalized Laplacian
-    degree = np.sum(a, axis=1)
-    degree[degree == 0] = 1e-10  # Avoid division by zero
-
-    D = np.diag(degree.astype(float))
-    D_inv_sqrt = np.diag(1.0 / np.sqrt(degree))
-    l = np.eye(len(a)) - D_inv_sqrt @ a @ D_inv_sqrt
-
-    # Compute and sort eigenvalues and eigenvectors
-    eigenvalues, eigenvectors = np.linalg.eigh(l)  # Use eigh for symmetric Laplacian
-    idx = np.argsort(eigenvalues)
-    eigenvalues = eigenvalues[idx]
-    eigenvectors = eigenvectors[:, idx]
-
-
-    # Determine number of clusters from eigengap
-    num_clusters = findClusterAmount(eigenvalues) + 1
-
-    # Normalize eigenvectors row-wise
-    norm_eigenvectors = normalize_rows(eigenvectors[:, :num_clusters])
-
-    # Run k-means
-    clusters = kmeans_until_converge(norm_eigenvectors, num_clusters)
-    """
-
     degree = get_degree(matrix)
 
     laplacian = find_normalized_laplacian(matrix, degree)
