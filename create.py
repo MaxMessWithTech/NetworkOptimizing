@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import datetime as dt
 import pytz
 
-def visualize_graph(matrix: np.array) -> None:
+def visualize_graph(matrix: np.array, saveFile=False) -> None:
     adj_matrix = np.array(matrix)
     graph = nx.from_numpy_array(adj_matrix)
 
@@ -46,7 +46,8 @@ def visualize_graph(matrix: np.array) -> None:
     plt.title("Graph Visualization with 1-based Node Labels", fontsize=14)
     plt.axis('off')
     plt.tight_layout()
-    plt.savefig(filename)
+    if saveFile:
+        plt.savefig(filename)
     plt.show()
 
 """
