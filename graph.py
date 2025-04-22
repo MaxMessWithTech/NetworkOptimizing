@@ -7,7 +7,35 @@ import matplotlib.pyplot as plt
 import datetime as dt
 import pytz
 
-def visualize_graph(matrix: np.array, saveFile=False) -> None:
+import coloredlogs, logging
+logger = logging.getLogger(__name__)
+coloredlogs.install(level='DEBUG', logger=logger)
+
+from colorama import Fore, Back, Style, init
+init(autoreset=True)
+
+
+
+def formatMatrix(matrix:np.array, max_digits=5) -> str:
+    # s = [ [ str(e)[:max_digits] for e in row ] for row in matrix ]
+    s = list()
+    for row in matrix:
+        newRow = list()
+        for e in row:
+            if e <= 0.001:
+                newRow.append(f"{Fore.RED}0.000{Fore.RESET}") 
+                continue
+            newRow.append(str(e)[:max_digits])
+        s.append(newRow)
+
+
+    lens = [ max(map(len, col)) for col in zip(*s) ]
+    fmt = '\t'.join('{{:{}}}'.format(x) for x in lens)
+    table = [ fmt.format(*row) for row in s ]
+    return '\n'.join(table)
+
+
+def visualize_graph(matrix: np.array, saveFile=False, debug=False) -> None:
     adj_matrix = np.array(matrix)
     graph = nx.from_numpy_array(adj_matrix)
 
@@ -18,10 +46,14 @@ def visualize_graph(matrix: np.array, saveFile=False) -> None:
     pos = nx.spring_layout(graph, seed=42)
 
     # Debugging info
-    print("Adjacency Matrix:\n", adj_matrix)
-    print("Graph edges with weights:")
-    for u, v, d in graph.edges(data=True):
-        print(f"{u} -- {v} (weight={d['weight']:.3g})")
+    if debug:
+
+        logger.info(f"Adjacency Matrix:\n{formatMatrix(adj_matrix)}")
+        logger.info("Graph edges with weights:")
+        for u, v, d in graph.edges(data=True):
+            logger.info(f"{u} -- {v} (weight={d['weight']:.3g})")
+
+    print("\n")
 
     plt.clf()  # Clear any existing plots
 
@@ -45,7 +77,7 @@ def visualize_graph(matrix: np.array, saveFile=False) -> None:
 
     plt.title("Graph Visualization with 1-based Node Labels", fontsize=14)
     plt.axis('off')
-    plt.tight_layout()
+    # plt.tight_layout()
     if saveFile:
         plt.savefig(filename)
     plt.show()
@@ -83,7 +115,7 @@ def convert_to_np_matrix(nodes: list[Node]) -> np.matrix:
     return np.array(matrix)
 
 
-def make_random_graph_OL(node_count:int, connection_count:int) -> list[Node]:
+def make_random_graph_OLD(node_count:int, connection_count:int) -> list[Node]:
     print("\r\nCREATING A WEIGHTED GRAPH\r\n")
     nodes = list()
     matrix = list(list())
@@ -116,7 +148,7 @@ def make_random_graph_OL(node_count:int, connection_count:int) -> list[Node]:
     return nodes
         
 def make_random_graph(node_count: int, connection_count: int) -> list[Node]:
-    print("\nCREATING A CONNECTED WEIGHTED GRAPH\n")
+    print(f"\n{Fore.CYAN}{Style.BRIGHT}CREATING A CONNECTED WEIGHTED GRAPH\n")
 
     if connection_count < node_count - 1:
         raise ValueError("To ensure connectivity, connection_count must be at least node_count - 1")
@@ -154,7 +186,7 @@ def make_random_graph(node_count: int, connection_count: int) -> list[Node]:
             matrix[b][a] = conn
             edges.add(edge_key)
 
-    print(f"\nGraph with {node_count} nodes and {len(edges)} connections successfully created.\n")
+    print(f"{Fore.CYAN}{Style.BRIGHT}Graph with {node_count} nodes and {len(edges)} connections successfully created.\n")
     return nodes
 
 if __name__ == "__main__":

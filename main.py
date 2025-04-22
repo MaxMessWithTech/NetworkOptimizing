@@ -5,8 +5,10 @@ from connection import Connection
 import algo
 import array
 from sklearn.cluster import KMeans
+from colorama import Fore, Back, Style, init
+init(autoreset=True)
 
-import create # import visualize_graph, make_random_graph, convert_to_np_matrix
+import graph # import visualize_graph, make_random_graph, convert_to_np_matrix
 
 # Function to create 
 def makeTestData() -> list[Node]:
@@ -35,15 +37,16 @@ def makeTestData() -> list[Node]:
 
 if __name__ == "__main__":
     
-    nodes = create.make_random_graph(9, 15)
+    nodes = graph.make_random_graph(9, 14)
     # nodes = makeTestData()
-    a = create.convert_to_np_matrix(nodes)
+    a = graph.convert_to_np_matrix(nodes)
     # print(a)
 
-    clusters, num_clusters = algo.compute_connectivity(matrix=a)
+    # clusters, num_clusters = algo.compute_connectivity(matrix=a)
+    clusters, k, new_adj = algo.compute_connectivity_until_convergence(a)
 
-    print(f"Clusters: {clusters}")
-    print(f"Detected number of clusters: {num_clusters}")
+    print(f"{Fore.GREEN}{k} Clusters: {clusters}")
+    # print(f"Detected number of clusters: {num_clusters}")
 
-    create.visualize_graph(a)
+    graph.visualize_graph(a)
     
