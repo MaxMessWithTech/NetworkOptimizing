@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.linalg import eigh, pinv
+from scipy.linalg import eigh
 from scipy.sparse.csgraph import shortest_path
 from typing import Tuple
 
